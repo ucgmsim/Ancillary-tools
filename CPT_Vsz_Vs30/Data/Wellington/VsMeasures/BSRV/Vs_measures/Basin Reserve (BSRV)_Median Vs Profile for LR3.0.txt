@@ -1,0 +1,17 @@
+# Basin Reserve (BSRV) LR3.0
+# Median Vs Profile
+# Depth (meters) | Vs (meters/second)
+0.00	 90
+1.9	 90
+1.9	 135
+5.2	 135
+5.2	 203
+15	 203
+15	 408
+33	 408
+33	 973
+196	 973
+196	 2046
+360	 2046
+360	 3018
+750	 3018

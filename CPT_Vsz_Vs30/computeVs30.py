@@ -1,12 +1,16 @@
+# Author: Claire Dong
+# Last modified: 30/08/2019
+
 import numpy as np
 from computeVsz import computeVsz
+from getCPTdata import getCPTdata
 
-def computeVs30(z, qc, fs, u2, correlationName, correlationFlag):
+def computeVs30(filename, correlationName, correlationFlag):
     '''Calculate Vs30 from Vsz (Boore et al., 2011)
        This correlation does not consider the site class.
     '''
     
-    (z, mu_Vsz, Vsz_SD) = computeVsz(z, qc, fs, u2, correlationName, correlationFlag)
+    (z, Vsz, Vsz_SD) = computeVsz(filename, correlationName, correlationFlag)
     
     # Coeffecients: [C0; C1; C2; SD] where z = [5, 29]
     coeffs = np.array([[0.2046, 1.318, -0.1174, 0.119], [-0.06072, 1.482, -0.1423, 0.111],\
@@ -30,11 +34,11 @@ def computeVs30(z, qc, fs, u2, correlationName, correlationFlag):
     # Compute Vs30
     log = np.log10
     ln = np.log
-    Vs30 = 10**(C0 + C1*log(mu_Vsz) + C2*(log(mu_Vsz))**2)
+    Vs30 = 10**(C0 + C1*log(Vsz) + C2*(log(Vsz))**2)
     # Compute Vs30 standard deviation
-    Vsz = ln(mu_Vsz)    
+    Vsz = ln(Vsz)    
     dVs30 = (C1*10**(C1*log(Vsz)) + 2*C2*log(Vsz)*10**(C2*log(Vsz)**2)) / Vsz
     Vs30_SD = np.sqrt(SD**2 + (dVs30**2)*(Vsz_SD)**2)
     
-    return Vs30, Vs30_SD
+    return z, Vs30, Vs30_SD
         

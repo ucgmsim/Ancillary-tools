@@ -1,0 +1,17 @@
+# BNZ Building (BNZ) LR5.0
+# Median Vs Profile
+# Depth (meters) | Vs (meters/second)
+0.00	 222
+1.4	 222
+1.4	 202
+2.7	 202
+2.7	 152
+4.7	 152
+4.7	 155
+6.2	 155
+6.2	 274
+36	 274
+36	 376
+97	 376
+97	 2242
+150	 2242

@@ -1,0 +1,15 @@
+# Frank Kitts Parking Structure (FKPS) LR3.0
+# Median Vs Profile
+# Depth (meters) | Vs (meters/second)
+0.00	 232
+0.83	 232
+0.83	 254
+1.4	 254
+1.4	 261
+12	 261
+12	 374
+36	 374
+36	 1098
+62	 1098
+62	 1980
+150	 1980

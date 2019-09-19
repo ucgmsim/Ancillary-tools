@@ -1,0 +1,12 @@
+#!/bin/bash
+# remove the empty processed CPT files
+
+for file in *.out
+do
+    if [ -s $file ] ; then
+        :
+    else
+        echo "$file is empty"
+        rm $file
+    fi ;
+done

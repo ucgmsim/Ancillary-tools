@@ -1,12 +1,16 @@
+# Author: Claire Dong
+# Last modified: 30/08/2019
+
 import numpy as np
 
 def getCPTparam(z, qc, fs, u2):
     '''Compute basic CPT parameters'''    
     # compute pore pressure corretd tip resistance
-    a = 0.8 
+    a = 0.8
+    u2 = u2
     qt = qc - u2*(1-a)
     # assume soil unit weight (MN/m3)
-    gamma = 0.00981 * 1.9 
+    gamma = 0.00981 * 1.9
     # atmospheric pressure (MPa)
     pa = 0.1
     # groundwater table depth(m)

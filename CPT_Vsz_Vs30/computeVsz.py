@@ -1,13 +1,31 @@
+# Author: Claire Dong
+# Last modified: 30/08/2019
+
 import numpy as np
 from computeVs import computeVs
 
-def computeVsz(z, qc, fs, u2, correlationName, correlationFlag):
+def computeVsz(filename, correlationName, correlationFlag):
     '''Calculate Vsz from randomly generated Vs profiles'''
     
-    (z, randVs) = computeVs(z, qc, fs, u2, correlationName, correlationFlag)
+    (z, randVs, Vs) = computeVs(filename, correlationName, correlationFlag)
     
     max_depth = int(z[-1]) # round down to the nearest integer
-    Vsz = []
+    
+    # the mean Vsz is computed from Vs based on correlation
+    d = 0
+    t = 0
+    n = 0
+    while z[n] < max_depth:
+        dn = z[n+1] - z[n]
+        vn = 0.5*(Vs[n] + Vs[n+1])      # velocity at mid point 
+        tn = dn / vn
+        t += tn
+        d += dn
+        n += 1
+    Vsz = float(d/t)
+    
+    # the standard deviation is estimated based on randVs
+    randVsz = []    
     for k in range(0, len(randVs[0])):
         d = 0
         t = 0
@@ -19,21 +37,17 @@ def computeVsz(z, qc, fs, u2, correlationName, correlationFlag):
             t += tn
             d += dn
             n += 1
-        Vsz.append(d/t)
+        randVsz.append(d/t)
     
+
     #------------------------Compute mean Vsz-----------------------------------
     if correlationFlag == 0:
-        # Vsz is randomly distributed, E(X) = average
-        mu_Vsz = np.mean(Vsz)
-        Vsz_SD = np.std(np.log(Vsz))
+        Vsz_SD = np.std(np.log(randVsz))
     
     elif correlationFlag == 1:
-        # Vsz has a log-normal distribution, E(X) = exp(mu+std^2/2)
-        mu = np.mean(np.log(Vsz))
-        Vsz_SD = np.std(np.log(Vsz))
-        mu_Vsz = np.exp(mu+(Vsz_SD**2/2))
+        Vsz_SD = np.std(np.log(randVsz))
         
-    print("Expected Vsz from '{0}' is: {1:.1f} m/s".format(correlationName, mu_Vsz))
-    print('Standard deviation for Vsz is: {:.4f}'.format(Vsz_SD))  
-    
-    return z, mu_Vsz, Vsz_SD
+    elif correlationFlag == 'partial':
+        Vsz_SD = np.std(np.log(randVsz))
+
+    return z, Vsz, Vsz_SD

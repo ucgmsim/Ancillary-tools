@@ -1,0 +1,15 @@
+# Anderson Park (ANPK) LR3.0
+# Median Vs Profile
+# Depth (meters) | Vs (meters/second)
+0.00	 105
+1.2	 105
+1.2	 155
+3.5	 155
+3.5	 187
+10	 187
+10	 532
+31	 532
+31	 884
+103	 884
+103	 1383
+200	 1383
