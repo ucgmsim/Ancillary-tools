@@ -5,7 +5,7 @@ import numpy as np
 
 def getCPTdata(filename):
     '''get CPT data and return [z; qc; fs; u2]'''
-    data = np.loadtxt(filename, dtype=float, usecols=(0,1,2,3))
+    data = np.loadtxt(filename, dtype=float, delimiter=",", skiprows=1)
     data = data[(np.all(data[:,[0]]<30, axis=1)).T] # z is less then 30 m
     data = data[np.all(data[:,[1,2]]>0, axis=1)]    # delete rows with zero qc, fs
     z_raw = data[:,0]                               # m
