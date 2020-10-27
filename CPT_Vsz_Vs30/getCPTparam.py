@@ -5,9 +5,8 @@ import numpy as np
 
 def getCPTparam(z, qc, fs, u2):
     '''Compute basic CPT parameters'''    
-    # compute pore pressure corretd tip resistance
+    # compute pore pressure corrected tip resistance
     a = 0.8
-    u2 = u2
     qt = qc - u2*(1-a)
     # assume soil unit weight (MN/m3)
     gamma = 0.00981 * 1.9
@@ -23,7 +22,7 @@ def getCPTparam(z, qc, fs, u2):
         if z[i] >= gwt:
             u0[i] = 0.00981*(z[i]-z[i-1]) + u0[i-1]
     effStress = totalStress - u0
-    effStress[0] = effStress[1] # fix error caused by dividing 0 
+    effStress[0] = effStress[1]  # fix error caused by dividing 0
     
     # compute non-normalised Ic based on the correlation by Robertson (2010).  
     Rf = (fs/qc)*100

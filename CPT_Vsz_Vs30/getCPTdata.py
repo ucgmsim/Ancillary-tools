@@ -12,7 +12,10 @@ def getCPTdata(filename):
     qc_raw = data[:,1]                              # MPa
     fs_raw = data[:,2]                              # MPa
     u2_raw = data[:,3]                              # Mpa
-    
+
+    if len(data) == 0:
+        raise Exception("CPT File has no valid lines")
+
     downsize = np.arange(z_raw[0],30,0.02)
     z = np.array([])
     qc = np.array([])
