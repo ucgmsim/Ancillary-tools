@@ -4,6 +4,9 @@
 import numpy as np
 from computeVs import computeVs
 
+from Ancillary_tools.CPT_Vsz_Vs30.calculations import compute_vsz_from_vs
+
+
 def computeVsz(filename, correlationName, correlationFlag):
     '''Calculate Vsz from randomly generated Vs profiles'''
     
@@ -48,27 +51,3 @@ def compute_vsz_sigma_from_vs(Vs, randVs, z, correlationFlag):
     return Vsz, Vsz_SD
 
 
-def compute_vsz_from_vs(Vs, z):
-    max_depth = int(z[-1])  # round down to the nearest integer
-    # the mean Vsz is computed from Vs based on correlation
-    d = 0
-    t = 0
-    n = 0
-    cur_depth = 0
-    prev_depth = None
-    cur_vs = prev_vs = Vs[0]
-    while cur_depth < max_depth:
-        prev_depth = cur_depth
-        cur_depth = z[n]
-        dn = cur_depth - prev_depth
-
-        prev_vs = cur_vs
-        cur_vs = Vs[n]
-
-        vn = 0.5 * (cur_vs + prev_vs)  # velocity at mid point
-        tn = dn / vn
-        t += tn
-        d += dn
-        n += 1
-    Vsz = float(d / t)
-    return Vsz, max_depth
