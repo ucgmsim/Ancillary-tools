@@ -1,14 +1,8 @@
-import argparse
-
-"""Input File location"""
 """
-# Edit File location by -> run -> Edit Configuration -> Parameters
-parser = argparse.ArgumentParser()
-parser.add_argument("--output_path", "-o", default="outputs/output.csv", help="Input path to save the output csv file")
-# args variables
-args = parser.parse_args()
-output_path = args.output_path"""
-
+Author: Sirui Wang
+Last edit: 1/18/2021
+contact email: sirui_wang@outlook.com
+"""
 
 with open('outputs/invalid_locations.txt', 'r') as log:
     lines = log.readlines()
@@ -44,7 +38,8 @@ with open('outputs/invalid_locations.txt', 'r') as log:
             entire_data_too_deep_log += 1
         else:
             fail2count += 1
-    TotalError = both_error_log_single + both_error_log_max + both_error_log_span + zero_value_log + max_depth_log + depth_span_log + single_depth_log + entire_data_too_deep_log
+    TotalError = both_error_log_single + both_error_log_max + both_error_log_span + zero_value_log + max_depth_log + \
+                 depth_span_log + single_depth_log + entire_data_too_deep_log
     print("fail to count = {}".format(fail2count))
     print("{} data entries are invalid".format(TotalError))
     print("{} are due to max depth less than 5 m and zero value spt test".format(both_error_log_max))

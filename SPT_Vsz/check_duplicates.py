@@ -1,8 +1,9 @@
 """
 Author: Sirui Wang
-
-Level 3 Script
+Last edit date: 1/21/2021
+Category: Tools
 """
+
 import pandas as pd
 
 """Input File location"""

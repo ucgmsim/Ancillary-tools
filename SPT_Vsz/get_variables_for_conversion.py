@@ -1,35 +1,47 @@
-
-
-def all_variables(hammer_type, bore_dia, rod_length):
+"""
+Author: Sirui Wang
+Last edit: 1/18/2021
+contact email: sirui_wang@outlook.com
+"""
+import numpy as np
+def all_variables(energy_ratio, hammer_type, bore_dia, rod_length):
     """
+    :param energy_ratio:
     :param hammer_type:
     :param bore_dia:
     :param rod_length:
     :return: return variables in a tuple with order of Ce, Cb, Cr,Cs
     """
-    Ce = get_Ce(hammer_type)
+    Ce = get_Ce(energy_ratio, hammer_type)
     Cr = get_Cr(int(rod_length))
     Cb = get_Cb(int(bore_dia))
     Cs = get_Cs()
     return Ce, Cb, Cr, Cs
 
 
-def get_Ce(hammer_type):
+def get_Ce(energy_ratio, hammer_type):
     """
     Ce is the energy correction factor which depends mainly on the way that hammer is lifted and released.
     Some typical values are presented on the table below (after Skempton, 1986)
-    :param location: spt location data
     :return: Ce value
     """
-    if hammer_type in ['Auto']:
-        # range 0.8 to 1.3
-        Ce = 0.8
+    Ce = 0.8  # in case the data is messed up and none of the following condition can be meet, assume a relative
+    # average Ce value of 0.8
+    if not np.isnan(energy_ratio):
+        float_energy_ratio = float(energy_ratio)
+        Ce = float_energy_ratio / 60
+        return Ce
     else:
-        # for doughnut hammer range 0.5 to 1.0
-        Ce = 0.5
-        # safety hammer ignored, it has range of 0.7 to 1.2
-    return Ce
-
+        if hammer_type in ['Auto']:
+            # range 0.8 to 1.3
+            Ce = 0.8
+        elif hammer_type in ["Safety"]:
+            # safety hammer, it has range of 0.7 to 1.2
+            Ce = 0.7
+        elif hammer_type in ["Standard"]:
+            # for doughnut hammer range 0.5 to 1.0
+            Ce = 0.5
+        return Ce
 
 
 def get_Cb(bore_dia):
@@ -39,10 +51,9 @@ def get_Cb(bore_dia):
     The borehole is either within range of 65-115, 150, or 200. if the diameter is not
     correctly recorded, assume they are 100 so that the Cb factor is 1. if diameter between 115 to 200 and not 150,
     assume its 150 so that Cb = 1.05
-    :param borehole diameter
     :return: Cb
     """
-    if bore_dia>= 65 and bore_dia<= 115:
+    if 65 <= bore_dia <= 115:
         Cb = 1
         return Cb
     elif bore_dia == 150:
@@ -52,7 +63,7 @@ def get_Cb(bore_dia):
         Cb = 1.15
         return Cb
     else:
-        return 1.05#####
+        return 1.05
 
 
 def get_Cr(rod_length):

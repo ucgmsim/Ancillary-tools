@@ -1,8 +1,9 @@
 """
 Author: Sirui Wang
-
-Level 3 Script
+Last edit: 1/18/2021
+contact email: sirui_wang@outlook.com
 """
+
 from collections.abc import Iterable
 
 
