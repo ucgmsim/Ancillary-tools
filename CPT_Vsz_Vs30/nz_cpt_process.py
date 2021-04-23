@@ -68,7 +68,7 @@ for row_n, cpt in cpt_df.iterrows():
             continue
 
         # Check for repeated digits
-        if any(value > 3 for fs_value in fs for key, value in count_digits(fs_value)):
+        if any(value > 3 for fs_value in fs for value in count_digits(fs_value).values()):
             log_error(skipped_fp, cpt_name, f"Repeated digit - investigating")
             continue
 
