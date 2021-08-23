@@ -13,6 +13,7 @@ from computeVs import Vs_McGann
 from computeVsz import compute_vsz_from_vs
 from computeVs30 import vsz_to_vs30
 
+from loc_filter import locs_multiple_records
 
 def log_error(skipped_fp, cpt_name, error):
     skipped_fp.write(f"{cpt_name} - {error}\n")
@@ -29,17 +30,26 @@ hostname = MPI.Get_processor_name()
 master = 0
 is_master = not rank
 
-out_dir = Path("/home/jam335/scratch/syncthing/vs30/cpt2vs30")
+out_dir = Path("/home/seb56/scratch/syncthing/vs30/cpt2vs30")
 plot_dir = out_dir / "validation_plots"
 
 cpt_df = pd.read_csv("/isilon/vs30/input_data/TTGD_CPT_sCPT_Download_2020-09-11/Metadata/cpt_locations_20200909.csv", sep=",")
 
-cpt_root_path = Path("/home/jam335/scratch/syncthing/vs30/cpt2vs30/CPT_Depth_Profile_CSVs")
+cpt_root_path = Path("/home/seb56/scratch/syncthing/vs30/cpt2vs30/CPT_Depth_Profile_CSVs")
 
 results = {}
 
 skipped_fp = open(out_dir / "skipped_cpts" / f"skipped_cpts_{rank}", "w")
+dup_locs = []
 
+if is_master:
+    dup_locs=locs_multiple_records()
+    import functools,operator
+    dup_locs = functools.reduce(operator.iconcat, list(dup_locs.values()), [])
+
+
+
+dup_locs = comm.bcast(dup_locs, root=0)
 for row_n, cpt in cpt_df.iterrows():
     if row_n % size != rank:
         continue
@@ -56,6 +66,11 @@ for row_n, cpt in cpt_df.iterrows():
             log_error(skipped_fp, cpt_name, f"could not read file: {str(e)}")
             continue
 
+        # duplicate location
+        if cpt_name in dup_locs:
+            log_error(skipped_fp, cpt_name, f"Duplicate location")
+            continue
+
         # duplicate depth check
         u, c = np.unique(z, return_counts=True)
         if np.any([c > 1]):
@@ -68,7 +83,7 @@ for row_n, cpt in cpt_df.iterrows():
             continue
 
         # Check for repeated digits
-        if any(value > 3 for fs_value in fs for key, value in count_digits(fs_value)):
+        if any(value > 3 for fs_value in fs for value in count_digits(fs_value).values()):
             log_error(skipped_fp, cpt_name, f"Repeated digit - investigating")
             continue
 
@@ -94,7 +109,6 @@ for row_n, cpt in cpt_df.iterrows():
         vs30_result["Zmin"] = min_depth
         vs30_result["Zspan"] = z_span
         results[cpt_name] = vs30_result
-
         if row_n < 10:
             fig, ax = plt.subplots()
             ax.plot(fs, z)
@@ -125,9 +139,10 @@ for row_n, cpt in cpt_df.iterrows():
     else:
         log_error(skipped_fp, cpt_name, f"CPT file not found")
 
-mpi_results = comm.gather(results, root=master)
-
+mpi_results = comm.gather(results, root=master)#
 if is_master:
+    print(mpi_results)
+
     master_results = {}
     for result_dict in mpi_results:
         master_results.update(result_dict)
