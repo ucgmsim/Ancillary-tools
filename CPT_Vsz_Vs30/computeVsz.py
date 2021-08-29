@@ -4,7 +4,7 @@
 import numpy as np
 from computeVs import computeVs
 
-from Ancillary_tools.CPT_Vsz_Vs30.calculations import compute_vsz_from_vs
+from calculations import compute_vsz_from_vs
 
 
 def computeVsz(filename, correlationName, correlationFlag):

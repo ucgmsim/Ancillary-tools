@@ -3,7 +3,7 @@
 
 from computeVsz import computeVsz
 
-from Ancillary_tools.CPT_Vsz_Vs30.calculations import vsz_to_vs30, vsz_to_vs30_sigma
+from calculations import vsz_to_vs30, vsz_to_vs30_sigma
 
 
 def computeVs30(filename, correlationName, correlationFlag):
