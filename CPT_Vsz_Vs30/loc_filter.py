@@ -5,7 +5,6 @@ from qcore import geo
 import sys
 import math
 
-cpt_df = pd.read_csv("/isilon/vs30/input_data/TTGD_CPT_sCPT_Download_2020-09-11/Metadata/cpt_locations_20200909.csv", sep=",")
 
 
 def nztm_to_ll(nztm_x,nztm_y):
@@ -60,16 +59,17 @@ def nztm_to_ll(nztm_x,nztm_y):
     return (latitude,longitude)
 
 
-def locs_multiple_records(stdout=False):
+def locs_multiple_records(cpt_locs, stdout=False):
 
     x=[]
     y=[]
     cpt_name=[]
-    for row_n, cpt in cpt_df.iterrows():
-        (lat,lon) = nztm_to_ll(cpt.NZTM_X,cpt.NZTM_Y)
+
+    for cpt in cpt_locs:
+        (lat,lon) = nztm_to_ll(cpt.nztm_x, cpt.nztm_y)
         x.append(lon)
         y.append(lat)
-        cpt_name.append(cpt.CombinedName)
+        cpt_name.append(cpt.name)
 
     locs=np.array([x,y]).T
 
@@ -92,7 +92,8 @@ def locs_multiple_records(stdout=False):
         while j < len(x):
             idx,d=geo.closest_location(locs[j:],x[i],y[i])
             k=j+idx
-            if d<0.0001:
+            if d<0.0001: #0.1m may be a bit too strict
+
             #    print("{} is close to {} distance {}".format(cpt_name[i],cpt_name[k],d))
                 if dup_idx.get(i) is None:
                     dup_idx[i]=[k]
