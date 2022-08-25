@@ -4,8 +4,6 @@ This package contains two different implementations for running mixed-effects re
 
 The only difference between the two implementations is the underlying packages they use.
 
-Note: Standard deviation calculation is incorrect as it assumes the random effects are independent. Needs further investigation.
-
 ---- 
 
 ### Installation
