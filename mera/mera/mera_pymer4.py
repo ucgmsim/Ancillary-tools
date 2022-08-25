@@ -95,13 +95,13 @@ def run_mera(
 
         bias_std_df.loc[cur_im, "bias"] = cur_model.coefs.iloc[0, 0]
 
-    bias_std_df.loc[:, "tau"] = event_res_df.std()
-    bias_std_df.loc[:, "phi_S2S"] = site_res_df.std()
-    bias_std_df.loc[:, "phi_w"] = rem_res_df.std()
+        bias_std_df.loc[cur_im, "tau"] = cur_model.ranef_var.loc[event_cname, "Std"]
+        bias_std_df.loc[cur_im, "phi_S2S"] = cur_model.ranef_var.loc[site_cname, "Std"]
+        bias_std_df.loc[cur_im, "phi_w"] = cur_model.ranef_var.loc["Residual", "Std"]
 
     # Compute total sigma
     bias_std_df["sigma"] = (
-        event_res_df.std() ** 2 + site_res_df.std() ** 2 + rem_res_df.std() ** 2
-    ).apply(np.sqrt)
+        bias_std_df["tau"] ** 2 + bias_std_df["phi_S2S"] ** 2 + bias_std_df["phi_w"] ** 2
+    ) ** (1/2)
 
     return event_res_df, site_res_df, rem_res_df, bias_std_df
