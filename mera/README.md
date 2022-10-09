@@ -8,14 +8,14 @@ The only difference between the two implementations is the underlying packages t
 
 ### Installation
 
-Navigate to the `Ancillar-Tools` directory and run `pip install -e ./mera`
+Navigate to the `Ancillary-Tools` directory and run `pip install -e ./mera`
 
 Note: Dependencies have to be installed manually depending on which implementation is used
 
 -----
 
 ### Implementation - statsmodel 
-This one is based on the python [statsmodel](https://www.statsmodels.org/stable/index.html) package. If the number of records is small then I recommend using this method as it has less dependencies. Howver, once the number of records becomes large (> 100k) memory becomes an issue as it creates a design matrix for each random effect of shape [n_records, n_unique_group_values].
+This one is based on the python [statsmodel](https://www.statsmodels.org/stable/index.html) package. If the number of records is small then I recommend using this method as it has less dependencies. However, once the number of records becomes large (> 100k) memory becomes an issue as it creates a design matrix for each random effect of shape [n_records, n_unique_group_values].
 
 Dependencies: `pip install statsmodels`
 

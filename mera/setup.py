@@ -5,5 +5,5 @@ setup(
     version="22.8.1",
     packages=find_packages(),
     url="",
-    description="Code for GM prediction mixed-rffects regression analysis",
+    description="Code for GM prediction mixed-effects regression analysis",
 )

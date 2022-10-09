@@ -52,12 +52,7 @@ def run_mera(
         remaining residual sigma (phi_w) and total sigma (sigma) (columns)
         per IM (rows)
     """
-    # Columns cannot have a '.' in them,
-    # otherwise statsmodel fails
-    ims = [cur_im.replace(".", "p") for cur_im in ims]
-    residual_df.columns = [cur_col.replace(".", "p") for cur_col in residual_df.columns]
-
-    # result dataframes
+    # Result dataframes
     event_res_df = pd.DataFrame(
         index=np.unique(residual_df[event_cname].values).astype(str), columns=ims
     )
