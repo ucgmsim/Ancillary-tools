@@ -5,10 +5,9 @@ from typing import Tuple, Union, Sequence, Dict
 
 import numpy as np
 import pandas as pd
-from qcore import nhm
+import qcore
 
 from . import plotting
-from . import utils
 
 
 def im_plot(
@@ -91,7 +90,7 @@ def im_plot(
         ("white", "black"),
         reverse_cmap=True,
         transparency=35,
-        cb_label=utils.get_im_name(im),
+        cb_label=qcore.im.IM.from_im_name(im).pretty_im_name
     )
 
     if fault_trace is not None:
@@ -111,7 +110,7 @@ def im_plot(
 
 def faults_plot(
     rupture_df: pd.DataFrame,
-    fault_data: Sequence[nhm.NHMFault],
+    fault_data: Sequence[qcore.nhm.NHMFault],
     region: Union[str, Tuple[float, float, float, float]] = (
         164.8,
         179.4,
@@ -200,7 +199,7 @@ def im_plots(
 
     # Load the trace if possible
     fault_trace = (
-        nhm.load_nhm(str(nhm_ffp))[fault].trace if nhm_ffp is not None else None
+        qcore.nhm.load_nhm(str(nhm_ffp))[fault].trace if nhm_ffp is not None else None
     )
 
     # Generate the plot/s
