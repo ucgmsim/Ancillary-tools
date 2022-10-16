@@ -38,7 +38,7 @@ ims = [
 ]
 
 # Compute the residual
-res_df = (obs_df[ims] / sim_df[ims]).apply(np.log)
+res_df = np.log(obs_df[ims] / sim_df[ims])
 
 # Add event id and station id columns
 res_df["event_id"] = obs_df.event_id
