@@ -54,10 +54,10 @@ def run_mera(
     """
     # Result dataframes
     event_res_df = pd.DataFrame(
-        index=np.unique(residual_df[event_cname].values).astype(str), columns=ims
+        index=np.unique(residual_df[event_cname].values.astype(str)), columns=ims
     )
     site_res_df = pd.DataFrame(
-        index=np.unique(residual_df[site_cname].values).astype(str), columns=ims
+        index=np.unique(residual_df[site_cname].values.astype(str)), columns=ims
     )
     rem_res_df = pd.DataFrame(index=residual_df.index.values, columns=ims)
     bias_std_df = pd.DataFrame(
