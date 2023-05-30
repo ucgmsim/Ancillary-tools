@@ -11,6 +11,7 @@ def run_mera(
     event_cname: str,
     site_cname: str,
     assume_biased: bool = True,
+    mask: pd.DataFrame = None,
 ):
     """
     Runs mixed effects regression analysis for the given
@@ -38,6 +39,10 @@ def run_mera(
         Recommended to have this enabled, otherwise any model
         bias (wrt. given dataset) will affect random effect
         terms.
+    mask: dataframe
+        Mask dataframe the size of the residual dataframe
+        which selects which values are being used per IM
+        for the lmer model. If None then all values are used.
 
     Returns
     -------
@@ -67,11 +72,22 @@ def run_mera(
     for cur_ix, cur_im in enumerate(ims):
         print(f"Processing IM {cur_im}, {cur_ix + 1}/{len(ims)}")
 
-        # Create and fit the model
+        # Filter on the mask if given
         cur_columns = [cur_im] + [event_cname, site_cname]
+        cur_residual_df = (
+            residual_df[cur_columns]
+            if mask is None
+            else residual_df[cur_columns].loc[mask[cur_im]]
+        )
+
+        # Check for nans
+        if cur_residual_df[cur_im].isna().sum() > 0:
+            raise ValueError(f"NaNs found in IM {cur_im}")
+
+        # Create and fit the model
         cur_model = Lmer(
             f"{cur_im} ~ {'1' if assume_biased else '0'} + (1|{event_cname}) + (1|{site_cname})",
-            data=residual_df[cur_columns],
+            data=cur_residual_df,
         )
         cur_model.fit(summary=False)
 
@@ -86,7 +102,10 @@ def run_mera(
             if cur_model.ranef[0].size == site_res_df.shape[0]
             else cur_model.ranef[1]
         )
-        rem_res_df[cur_im] = cur_model.residuals
+        if mask is None:
+            rem_res_df[cur_im] = cur_model.residuals
+        else:
+            rem_res_df.loc[mask[cur_im], cur_im] = cur_model.residuals
 
         bias_std_df.loc[cur_im, "bias"] = cur_model.coefs.iloc[0, 0]
 
@@ -96,7 +115,9 @@ def run_mera(
 
     # Compute total sigma
     bias_std_df["sigma"] = (
-        bias_std_df["tau"] ** 2 + bias_std_df["phi_S2S"] ** 2 + bias_std_df["phi_w"] ** 2
-    ) ** (1/2)
+        bias_std_df["tau"] ** 2
+        + bias_std_df["phi_S2S"] ** 2
+        + bias_std_df["phi_w"] ** 2
+    ) ** (1 / 2)
 
     return event_res_df, site_res_df, rem_res_df, bias_std_df
