@@ -74,20 +74,20 @@ def run_mera(
 
         # Filter on the mask if given
         cur_columns = [cur_im] + [event_cname, site_cname]
-        data = (
+        cur_residual_df = (
             residual_df[cur_columns]
             if mask is None
             else residual_df[cur_columns].loc[mask[cur_im]]
         )
 
         # Check for nans
-        if data[cur_im].isna().sum() > 0:
+        if cur_residual_df[cur_im].isna().sum() > 0:
             raise ValueError(f"NaNs found in IM {cur_im}")
 
         # Create and fit the model
         cur_model = Lmer(
             f"{cur_im} ~ {'1' if assume_biased else '0'} + (1|{event_cname}) + (1|{site_cname})",
-            data=data,
+            data=cur_residual_df,
         )
         cur_model.fit(summary=False)
 
