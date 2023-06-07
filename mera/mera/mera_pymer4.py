@@ -91,17 +91,15 @@ def run_mera(
         )
         cur_model.fit(summary=False)
 
-        # Get random effects
-        event_res_df[cur_im] = (
-            cur_model.ranef[0]
-            if cur_model.ranef[0].size == event_res_df.shape[0]
-            else cur_model.ranef[1]
-        )
-        site_res_df[cur_im] = (
-            cur_model.ranef[0]
-            if cur_model.ranef[0].size == site_res_df.shape[0]
-            else cur_model.ranef[1]
-        )
+        # Get the site and event random effects
+        event_re = cur_model.ranef[0].iloc[:, 0]
+        site_re = cur_model.ranef[1].iloc[:, 0]
+        if site_re.size > event_re.size:
+            raise ValueError("More site terms than event terms")
+
+        # Add random effects to the event, site and rem dataframes
+        event_res_df.loc[event_re.index, cur_im] = event_re
+        site_res_df.loc[site_re.index, cur_im] = site_re
         if mask is None:
             rem_res_df[cur_im] = cur_model.residuals
         else:
