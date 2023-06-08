@@ -84,32 +84,36 @@ def run_mera(
         if cur_residual_df[cur_im].isna().sum() > 0:
             raise ValueError(f"NaNs found in IM {cur_im}")
 
-        # Create and fit the model
-        cur_model = Lmer(
-            f"{cur_im} ~ {'1' if assume_biased else '0'} + (1|{event_cname}) + (1|{site_cname})",
-            data=cur_residual_df,
-        )
-        cur_model.fit(summary=False)
 
-        # Get the site and event random effects
-        event_re = cur_model.ranef[0].iloc[:, 0]
-        site_re = cur_model.ranef[1].iloc[:, 0]
-        if site_re.size > event_re.size:
-            raise ValueError("More site terms than event terms")
+        if len(cur_residual_df) > 0:
+            # Create and fit the model
+            cur_model = Lmer(
+                f"{cur_im} ~ {'1' if assume_biased else '0'} + (1|{event_cname}) + (1|{site_cname})",
+                data=cur_residual_df,
+            )
+            cur_model.fit(summary=False)
 
-        # Add random effects to the event, site and rem dataframes
-        event_res_df.loc[event_re.index, cur_im] = event_re
-        site_res_df.loc[site_re.index, cur_im] = site_re
-        if mask is None:
-            rem_res_df[cur_im] = cur_model.residuals
+            # Get the site and event random effects (Ensure we extract the right dataframe with correct indexes)
+            event_index = 0 if np.any(cur_model.ranef[0].index.isin(event_res_df.index)) else 1
+            site_index = 1 if np.any(cur_model.ranef[1].index.isin(site_res_df.index)) else 0
+            event_re = cur_model.ranef[event_index].iloc[:, 0]
+            site_re = cur_model.ranef[site_index].iloc[:, 0]
+
+            # Add random effects to the event, site and rem dataframes
+            event_res_df.loc[event_re.index, cur_im] = event_re
+            site_res_df.loc[site_re.index, cur_im] = site_re
+            if mask is None:
+                rem_res_df[cur_im] = cur_model.residuals
+            else:
+                rem_res_df.loc[mask[cur_im], cur_im] = cur_model.residuals
+
+            bias_std_df.loc[cur_im, "bias"] = cur_model.coefs.iloc[0, 0]
+
+            bias_std_df.loc[cur_im, "tau"] = cur_model.ranef_var.loc[event_cname, "Std"]
+            bias_std_df.loc[cur_im, "phi_S2S"] = cur_model.ranef_var.loc[site_cname, "Std"]
+            bias_std_df.loc[cur_im, "phi_w"] = cur_model.ranef_var.loc["Residual", "Std"]
         else:
-            rem_res_df.loc[mask[cur_im], cur_im] = cur_model.residuals
-
-        bias_std_df.loc[cur_im, "bias"] = cur_model.coefs.iloc[0, 0]
-
-        bias_std_df.loc[cur_im, "tau"] = cur_model.ranef_var.loc[event_cname, "Std"]
-        bias_std_df.loc[cur_im, "phi_S2S"] = cur_model.ranef_var.loc[site_cname, "Std"]
-        bias_std_df.loc[cur_im, "phi_w"] = cur_model.ranef_var.loc["Residual", "Std"]
+            print("WARNING: No data for IM, skipping...")
 
     # Compute total sigma
     bias_std_df["sigma"] = (
