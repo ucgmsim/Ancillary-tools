@@ -67,13 +67,15 @@ def run_mera(
     event_res_df = pd.DataFrame(
         index=np.unique(residual_df[event_cname].values.astype(str)), columns=ims
     )
-    site_res_df = pd.DataFrame(
-        index=np.unique(residual_df[site_cname].values.astype(str)), columns=ims
-    )
     rem_res_df = pd.DataFrame(index=residual_df.index.values, columns=ims)
     bias_std_df = pd.DataFrame(
         index=ims, columns=["bias", "tau", "phi_S2S", "phi_w", "sigma"]
     )
+
+    if compute_site_term:
+        site_res_df = pd.DataFrame(
+            index=np.unique(residual_df[site_cname].values.astype(str)), columns=ims
+        )
 
     for cur_ix, cur_im in enumerate(ims):
         print(f"Processing IM {cur_im}, {cur_ix + 1}/{len(ims)}")
