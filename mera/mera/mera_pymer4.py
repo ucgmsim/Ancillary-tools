@@ -72,16 +72,18 @@ def run_mera(
         index=ims, columns=["bias", "tau", "phi_S2S", "phi_w", "sigma"]
     )
 
+    random_effects_columns = [event_cname]
     if compute_site_term:
         site_res_df = pd.DataFrame(
             index=np.unique(residual_df[site_cname].values.astype(str)), columns=ims
         )
+        random_effects_columns.append(site_cname)
 
     for cur_ix, cur_im in enumerate(ims):
         print(f"Processing IM {cur_im}, {cur_ix + 1}/{len(ims)}")
 
         # Filter on the mask if given
-        cur_columns = [cur_im] + [event_cname, site_cname]
+        cur_columns = [cur_im] + random_effects_columns
         cur_residual_df = (
             residual_df[cur_columns]
             if mask is None
