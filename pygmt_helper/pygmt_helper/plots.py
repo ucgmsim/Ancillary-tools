@@ -154,14 +154,15 @@ def faults_plot(
     )
 
     # Plot the historic events
-    fig.plot(
-        x=rupture_df.loc[rupture_df.historic].hlon,
-        y=rupture_df.loc[rupture_df.historic].hlat,
-        size=0.005 * (2 ** rupture_df.loc[rupture_df.historic].mag),
-        style="cc",
-        color="white",
-        pen="0.1p,black",
-    )
+    if np.any(rupture_df.historic):
+        fig.plot(
+            x=rupture_df.loc[rupture_df.historic].hlon,
+            y=rupture_df.loc[rupture_df.historic].hlat,
+            size=0.005 * (2 ** rupture_df.loc[rupture_df.historic].mag),
+            style="cc",
+            fill="white",
+            pen="0.1p,black",
+        )
 
     # Plot the fault traces
     for cur_fault in fault_data:

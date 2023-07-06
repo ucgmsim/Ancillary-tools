@@ -125,11 +125,11 @@ def gen_region_fig(
                 ]
             )
         )
-        fig.plot(water_bg, color="lightblue", straight_line=True)
+        fig.plot(water_bg, fill="lightblue", straight_line=True)
         fig.plot(
             data=map_data.coastline_df,
             pen=f"{plot_kwargs['coastline_pen_width']}p,black",
-            color="lightgray",
+            fill="lightgray",
         )
 
         # Add topo
@@ -147,7 +147,7 @@ def gen_region_fig(
             )
 
         # Plot water
-        fig.plot(data=map_data.water_df, color="lightblue")
+        fig.plot(data=map_data.water_df, fill="lightblue")
 
         # Add roads
         if plot_roads:
@@ -264,7 +264,7 @@ def create_grid(
     data_key: str,
     grid_spacing: str = "200e/200e",
     region: Union[str, Tuple[float, float, float, float]] = "NZ",
-    interp_method: str = "CloughTorcher",
+    interp_method: str = "linear",
 ):
     """
     Creates a regular grid from the available unstructured data
