@@ -65,11 +65,13 @@ def run_mera(
     """
     # Result dataframes
     event_res_df = pd.DataFrame(
-        index=np.unique(residual_df[event_cname].values.astype(str)), columns=ims
+        index=np.unique(residual_df[event_cname].values.astype(str)),
+        columns=ims,
+        dtype=float,
     )
-    rem_res_df = pd.DataFrame(index=residual_df.index.values, columns=ims)
+    rem_res_df = pd.DataFrame(index=residual_df.index.values, columns=ims, dtype=float)
     bias_std_df = pd.DataFrame(
-        index=ims, columns=["bias", "tau", "phi_S2S", "phi_w", "sigma"]
+        index=ims, columns=["bias", "tau", "phi_S2S", "phi_w", "sigma"], dtype=float
     )
 
     random_effects_columns = [event_cname]
@@ -166,4 +168,3 @@ def run_mera(
             bias_std_df["tau"] ** 2 + bias_std_df["phi_w"] ** 2
         ) ** (1 / 2)
         return event_res_df, rem_res_df, bias_std_df
-

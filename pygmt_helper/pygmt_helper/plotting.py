@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 import tempfile
-from typing import Tuple, Union, NamedTuple
+from typing import Tuple, Union, NamedTuple, Dict, Any
 
 import pygmt
 import geopandas
@@ -50,6 +50,7 @@ DEFAULT_PLT_KWARGS = dict(
     highway_pen_width=0.5,
     coastline_pen_width=0.05,
     topo_cmap="gray",
+    frame_args = ["af", "xaf+lLongitude", "yaf+lLatitude"]
 )
 
 
@@ -61,7 +62,8 @@ def gen_region_fig(
     plot_roads: bool = True,
     plot_highways: bool = True,
     plot_topo: bool = True,
-    plot_kwargs=None,
+    plot_kwargs: Dict[str, Any] = None,
+    config_options: Dict[str, Union[str, int]] = None,
 ):
     """
     Creates a basic figure for the specified region
@@ -90,10 +92,6 @@ def gen_region_fig(
     -------
     fig: Figure
     """
-    frame_args = ["af", "xaf+lLongitude", "yaf+lLatitude"]
-    if title is not None:
-        frame_args.append(f'+t"{title}"')
-
     # Merge with default
     plot_kwargs = (
         DEFAULT_PLT_KWARGS
@@ -101,8 +99,18 @@ def gen_region_fig(
         else {**DEFAULT_PLT_KWARGS, **plot_kwargs}
     )
 
+    if title is not None:
+        if plot_kwargs["frame_args"] is None:
+            plot_kwargs["frame_args"]= [f'+t"{title}"']
+        else:
+            plot_kwargs["frame_args"].append(f'+t"{title}"')
+
     fig = pygmt.Figure()
-    fig.basemap(region=region, projection=projection, frame=frame_args)
+
+    if config_options is not None:
+        pygmt.config(**config_options)
+
+    fig.basemap(region=region, projection=projection, frame=plot_kwargs["frame_args"])
 
     # Plots the default coast (sea & inland lakes/rivers)
     if map_data is None:
@@ -114,53 +122,69 @@ def gen_region_fig(
         )
     # Use the custom NZ data
     else:
-        # Plot coastline and background water
-        water_bg = geopandas.GeoSeries(
-            geometry.LineString(
-                [
-                    (fig.region[0], fig.region[2]),
-                    (fig.region[1], fig.region[2]),
-                    (fig.region[1], fig.region[3]),
-                    [fig.region[0], fig.region[3]],
-                ]
-            )
+        _draw_map_data(
+            fig,
+            map_data,
+            plot_topo=plot_topo,
+            plot_roads=plot_roads,
+            plot_highways=plot_highways,
+            plot_kwargs=plot_kwargs,
         )
-        fig.plot(water_bg, fill="lightblue", straight_line=True)
-        fig.plot(
-            data=map_data.coastline_df,
-            pen=f"{plot_kwargs['coastline_pen_width']}p,black",
-            fill="lightgray",
-        )
-
-        # Add topo
-        if plot_topo:
-            pygmt.makecpt(
-                series=(-10_000, 3000, 10),
-                continuous=False,
-                cmap=plot_kwargs["topo_cmap"],
-            )
-            fig.grdimage(
-                grid=map_data.topo_grid,
-                shading=map_data.topo_shading_grid,
-                cmap=True,
-                nan_transparent=True,
-            )
-
-        # Plot water
-        fig.plot(data=map_data.water_df, fill="lightblue")
-
-        # Add roads
-        if plot_roads:
-            fig.plot(
-                data=map_data.road_df, pen=f"{plot_kwargs['road_pen_width']}p,white"
-            )
-        if plot_highways:
-            fig.plot(
-                data=map_data.highway_df,
-                pen=f"{plot_kwargs['highway_pen_width']}p,yellow",
-            )
 
     return fig
+
+
+def _draw_map_data(
+    fig: pygmt.Figure,
+    map_data: Union[NZMapData, None],
+    plot_topo: bool = True,
+    plot_roads: bool = True,
+    plot_highways: bool = True,
+    plot_kwargs: Dict[str, Union[str, int]] = None,
+):
+    # Plot coastline and background water
+    water_bg = geopandas.GeoSeries(
+        geometry.LineString(
+            [
+                (fig.region[0], fig.region[2]),
+                (fig.region[1], fig.region[2]),
+                (fig.region[1], fig.region[3]),
+                [fig.region[0], fig.region[3]],
+            ]
+        )
+    )
+    fig.plot(water_bg, fill="lightblue", straight_line=True)
+    fig.plot(
+        data=map_data.coastline_df,
+        pen=f"{plot_kwargs['coastline_pen_width']}p,black",
+        fill="lightgray",
+    )
+
+    # Add topo
+    if plot_topo:
+        pygmt.makecpt(
+            series=(-10_000, 3000, 10),
+            continuous=False,
+            cmap=plot_kwargs["topo_cmap"],
+        )
+        fig.grdimage(
+            grid=map_data.topo_grid,
+            shading=map_data.topo_shading_grid,
+            cmap=True,
+            nan_transparent=True,
+        )
+
+    # Plot water
+    fig.plot(data=map_data.water_df, fill="lightblue")
+
+    # Add roads
+    if plot_roads:
+        fig.plot(data=map_data.road_df, pen=f"{plot_kwargs['road_pen_width']}p,white")
+    if plot_highways:
+        fig.plot(
+            data=map_data.highway_df,
+            pen=f"{plot_kwargs['highway_pen_width']}p,yellow",
+        )
 
 
 def plot_grid(
@@ -255,7 +279,8 @@ def plot_grid(
         if cb_label is not None:
             cb_frame.append(f'x+l"{cb_label}"')
         fig.colorbar(
-            cmap=cpt_ffp, frame=cb_frame,
+            cmap=cpt_ffp,
+            frame=cb_frame,
         )
 
 
@@ -335,5 +360,3 @@ def create_grid(
     grid.values[~land_mask.astype(bool)] = np.nan
 
     return grid
-
-
