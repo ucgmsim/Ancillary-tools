@@ -59,7 +59,8 @@ def run_mera(
         Contains the leftover residuals for
         each record (rows) and IM (columns)
     bias_std_df: dataframe
-        Contains bias, between-event sigma (tau), between-site sigma (phi_S2S),
+        Contains bias, between-event sigma (tau),
+        between-site sigma (phi_S2S) (only when compute_site_term is True),
         remaining residual sigma (phi_w) and total sigma (sigma) (columns)
         per IM (rows)
     """
