@@ -35,6 +35,7 @@ ims = [
     cur_im
     for cur_im in np.intersect1d(obs_df.columns, sim_df.columns)
     if cur_im.startswith("pSA")
+    or cur_im in ["PGA", "CAV", "Ds575", "Ds595", "AI", "PGV"]
 ]
 
 # Compute the residual
