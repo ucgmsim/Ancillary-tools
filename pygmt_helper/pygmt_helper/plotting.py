@@ -82,6 +82,9 @@ def gen_region_fig(
         documentation for this
     map_data: NZMapData
         Custom map data from qcore
+    plot_roads: bool, optional
+    plot_highways: bool, optional
+    plot_topo: bool, optional
     plot_kwargs: dictionary
         Extra plotting arguments, see DEFAULT_PLT_KWARGS
         for available options
