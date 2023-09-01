@@ -82,11 +82,15 @@ def gen_region_fig(
         documentation for this
     map_data: NZMapData
         Custom map data from qcore
-    plot_kwargs:
+    plot_kwargs: dictionary
         Extra plotting arguments, see DEFAULT_PLT_KWARGS
         for available options
 
         Note: Only need to specify the ones to override
+    config_options: dictionary
+        Config options to be applied to the figure
+        See https://docs.generic-mapping-tools.org/latest/gmt.conf.html
+        for list of availbale config options
 
     Returns
     -------
