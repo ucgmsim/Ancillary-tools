@@ -120,6 +120,7 @@ def faults_plot(
     map_data: plotting.NZMapData = None,
     title: str = "Faults",
     show_hypo: bool = False,
+    highlight_faults: Sequence[str] = None,
 ):
     """
     Creates a figure showing all
@@ -138,6 +139,13 @@ def faults_plot(
         for full details
     map_data: NZMapData
         Custom map data from qcore
+    title: str
+        Title of the plot
+    show_hypo: bool
+        If true, then plot Cybershake hypocentres
+    highlight_faults: list of str
+        Highlight the given faults in red
+
 
     Returns
     -------
@@ -164,10 +172,17 @@ def faults_plot(
             pen="0.1p,black",
         )
 
+    if highlight_faults is None:
+        highlight_faults = []
+
     # Plot the fault traces
     for cur_fault in fault_data:
         cur_trace = cur_fault.trace
-        fig.plot(x=cur_trace[:, 0], y=cur_trace[:, 1], pen="0.5p,black")
+        fig.plot(
+            x=cur_trace[:, 0],
+            y=cur_trace[:, 1],
+            pen="2.0p,red" if cur_fault.name in highlight_faults else "0.5p,black",
+        )
 
     # Plot the cybershake hypocentres
     if show_hypo:
