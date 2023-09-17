@@ -50,6 +50,10 @@ DEFAULT_PLT_KWARGS = dict(
     highway_pen_width=0.5,
     coastline_pen_width=0.05,
     topo_cmap="gray",
+    topo_cmap_min=-3000,
+    topo_cmap_max=3000,
+    topo_cmap_inc=10,
+    topo_cmap_reverse=True,
     frame_args = ["af", "xaf+lLongitude", "yaf+lLatitude"]
 )
 
@@ -170,9 +174,10 @@ def _draw_map_data(
     # Add topo
     if plot_topo:
         pygmt.makecpt(
-            series=(-10_000, 3000, 10),
+            series=(plot_kwargs["topo_cmap_min"], plot_kwargs["topo_cmap_max"], plot_kwargs["topo_cmap_inc"]),
             continuous=False,
             cmap=plot_kwargs["topo_cmap"],
+            reverse=plot_kwargs["topo_cmap_reverse"]
         )
         fig.grdimage(
             grid=map_data.topo_grid,
