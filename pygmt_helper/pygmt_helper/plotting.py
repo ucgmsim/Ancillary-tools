@@ -1,3 +1,4 @@
+import copy
 import pandas as pd
 from pathlib import Path
 import tempfile
@@ -105,7 +106,7 @@ def gen_region_fig(
     """
     # Merge with default
     plot_kwargs = (
-        DEFAULT_PLT_KWARGS
+        copy.deepcopy(DEFAULT_PLT_KWARGS)
         if plot_kwargs is None
         else {**DEFAULT_PLT_KWARGS, **plot_kwargs}
     )
