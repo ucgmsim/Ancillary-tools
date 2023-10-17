@@ -303,6 +303,7 @@ def create_grid(
     grid_spacing: str = "200e/200e",
     region: Union[str, Tuple[float, float, float, float]] = "NZ",
     interp_method: str = "linear",
+set_water_to_nan: bool = True,
 ):
     """
     Creates a regular grid from the available unstructured data
@@ -370,6 +371,7 @@ def create_grid(
     )
 
     # Change water values to nan
-    grid.values[~land_mask.astype(bool)] = np.nan
+    if set_water_to_nan:
+        grid.values[~land_mask.astype(bool)] = np.nan
 
     return grid
