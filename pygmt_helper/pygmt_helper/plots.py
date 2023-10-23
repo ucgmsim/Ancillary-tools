@@ -90,7 +90,7 @@ def im_plot(
         ("white", "black"),
         reverse_cmap=True,
         transparency=35,
-        cb_label=qcore.im.IM.from_im_name(im).pretty_im_name
+        cb_label=qcore.im.IM.from_im_name(im).pretty_im_name,
     )
 
     if fault_trace is not None:

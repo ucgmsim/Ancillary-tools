@@ -199,6 +199,10 @@ def plot_grid(
     log_cmap: bool, optional
         Create a log10 based colourmap
         Expects the cmap_limits to be log10(z)
+    transparency: float, optional
+        Transparency of the grid colourmap
+    cb_label: string, optional
+        Label for the colourbar
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dir = Path(tmp_dir)

@@ -41,7 +41,7 @@ grid = plotting.create_grid(df, "ratio")
 
 # Plot the grid
 plotting.plot_grid(
-    fig, grid, "polar", (-0.5, 0.5, 1.0 / 16), ("darkred", "darkblue"), transparency=35
+    fig, grid, "polar", (-0.5, 0.5, 1.0 / 16), ("darkred", "darkblue"), transparency=35,
 )
 
 # Save the figure
