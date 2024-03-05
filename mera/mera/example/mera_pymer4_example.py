@@ -45,9 +45,13 @@ res_df = np.log(obs_df[ims] / sim_df[ims])
 res_df["event_id"] = obs_df.event_id
 res_df["stat_id"] = obs_df.stat_id
 
+# Ensure that the event and site ids are different (i.e. no common values)
+res_df["event_id"] = np.char.add("event_", res_df["event_id"].values.astype(str))
+res_df["stat_id"] = np.char.add("stat_", res_df["stat_id"].values.astype(str))
+
 # Run MER
 event_res_df, site_res_df, rem_res_df, bias_std_df = run_mera(
-    res_df, list(ims), "event_id", "stat_id"
+    res_df, list(ims), "event_id", "stat_id",
 )
 
 # Save the results
