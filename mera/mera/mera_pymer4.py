@@ -48,6 +48,8 @@ def run_mera(
         Mask dataframe the size of the residual dataframe
         which selects which values are being used per IM
         for the lmer model. If None then all values are used.
+    verbose: bool
+        If true then prints the progress of the analysis
 
     Returns
     -------
