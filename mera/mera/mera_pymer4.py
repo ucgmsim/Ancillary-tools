@@ -13,6 +13,7 @@ def run_mera(
     assume_biased: bool = True,
     compute_site_term: bool = True,
     mask: pd.DataFrame = None,
+    verbose: bool = True,
 ):
     """
     Runs mixed effects regression analysis for the given
@@ -47,6 +48,8 @@ def run_mera(
         Mask dataframe the size of the residual dataframe
         which selects which values are being used per IM
         for the lmer model. If None then all values are used.
+    verbose: bool
+        If true then prints the progress of the analysis
 
     Returns
     -------
@@ -83,7 +86,8 @@ def run_mera(
         random_effects_columns.append(site_cname)
 
     for cur_ix, cur_im in enumerate(ims):
-        print(f"Processing IM {cur_im}, {cur_ix + 1}/{len(ims)}")
+        if verbose:
+            print(f"Processing IM {cur_im}, {cur_ix + 1}/{len(ims)}")
 
         # Filter on the mask if given
         cur_columns = [cur_im] + random_effects_columns
