@@ -39,12 +39,10 @@ class NZMapData(NamedTuple):
             highway_df=geopandas.read_file(highway_ffp),
             coastline_df=geopandas.read_file(coastline_ffp),
             water_df=geopandas.read_file(water_ffp),
-            topo_grid=pygmt.grdclip(grid=str(topo_ffp), below=[0.1, np.nan]).astype(
-                np.float16
-            ),
+            topo_grid=pygmt.grdclip(grid=str(topo_ffp), below=[0.1, np.nan]),
             topo_shading_grid=pygmt.grdclip(
                 grid=str(topo_shading_ffp), below=[0.1, np.nan]
-            ).astype(np.float16),
+            )
         )
 
 
