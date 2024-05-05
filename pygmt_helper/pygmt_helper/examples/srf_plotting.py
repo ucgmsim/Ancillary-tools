@@ -7,10 +7,10 @@ from pygmt_helper import plotting
 from qcore import srf
 
 
-map_data_ffp = Path("/Users/claudy/dev/work/code/qcore/qcore/data")
-output_dir = Path("/Users/claudy/dev/work/tmp/srf_plots")
+map_data_ffp = Path("/path/to/qcore/qcore/data")
+output_dir = Path("output/dir")
 
-srf_ffp = Path("/Users/claudy/Downloads/2016p858000.srf")
+srf_ffp = Path("/path/to/the/srf/file")
 
 # Load the srf data
 planes = srf.read_header(str(srf_ffp), idx=True)
@@ -18,6 +18,7 @@ corners = srf.get_bounds(str(srf_ffp), depth=True)
 corners = np.transpose(np.array(corners), (1, 2, 0))
 slip_values = srf.srf2llv_py(str(srf_ffp), value="slip")
 
+# Set map_data to None for faster plotting without topography
 # map_data = plotting.NZMapData.load(map_data_ffp, high_res_topo=False)
 map_data = None
 
@@ -33,7 +34,7 @@ region = (
     corners[:, 1, :].min() - 0.25,
     corners[:, 1, :].max() + 0.25,
 )
-fig = plotting.gen_region_fig("2016p858000", region=region, map_data=map_data)
+fig = plotting.gen_region_fig("Title", region=region, map_data=map_data)
 
 # Process each fault plane
 for ix, (cur_plane, cur_slip) in enumerate(zip(planes, slip_values)):
@@ -83,7 +84,6 @@ for ix, (cur_plane, cur_slip) in enumerate(zip(planes, slip_values)):
 
 fig.savefig(
     output_dir / f"srf.png",
-    # dpi=900,
     dpi=1200,
     anti_alias=True,
 )

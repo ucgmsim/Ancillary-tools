@@ -42,7 +42,7 @@ class NZMapData(NamedTuple):
             topo_grid=pygmt.grdclip(grid=str(topo_ffp), below=[0.1, np.nan]),
             topo_shading_grid=pygmt.grdclip(
                 grid=str(topo_shading_ffp), below=[0.1, np.nan]
-            )
+            ),
         )
 
 
