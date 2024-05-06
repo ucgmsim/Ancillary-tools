@@ -215,7 +215,7 @@ def plot_grid(
     log_cmap: bool = False,
     transparency: float = 0.0,
     plot_contours: bool = True,
-    continuous_cpt: bool = False,
+    continuous_cmap: bool = False,
 ):
     """
     Plots the given grid as a colourmap & contours
@@ -246,7 +246,13 @@ def plot_grid(
     transparency: float, optional
         Controls the level of transparency (0-100)
     plot_contours: bool, optional
-    continuous_cpt: bool, optional
+        Enable/Disable contours
+        A contour line is plotted for every
+        2nd colour step
+    continuous_cmap: bool, optional
+        If specified, a continuous colormap is used
+        See https://www.pygmt.org/latest/api/generated/pygmt.makecpt.html
+        for details
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dir = Path(tmp_dir)
@@ -269,7 +275,7 @@ def plot_grid(
             output=cpt_ffp,
             reverse=reverse_cmap,
             log=log_cmap,
-            continuous=continuous_cpt,
+            continuous=continuous_cmap,
         )
         pygmt.makecpt(
             cmap=cmap,
