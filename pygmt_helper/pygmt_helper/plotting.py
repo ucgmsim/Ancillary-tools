@@ -55,7 +55,7 @@ DEFAULT_PLT_KWARGS = dict(
     topo_cmap_max=3000,
     topo_cmap_inc=10,
     topo_cmap_reverse=True,
-    frame_args = ["af", "xaf+lLongitude", "yaf+lLatitude"]
+    frame_args=["af", "xaf+lLongitude", "yaf+lLatitude"],
 )
 
 
@@ -113,7 +113,7 @@ def gen_region_fig(
 
     if title is not None:
         if plot_kwargs["frame_args"] is None:
-            plot_kwargs["frame_args"]= [f'+t"{title}"']
+            plot_kwargs["frame_args"] = [f'+t"{title}"']
         else:
             plot_kwargs["frame_args"].append(f'+t"{title}"')
 
@@ -175,10 +175,14 @@ def _draw_map_data(
     # Add topo
     if plot_topo:
         pygmt.makecpt(
-            series=(plot_kwargs["topo_cmap_min"], plot_kwargs["topo_cmap_max"], plot_kwargs["topo_cmap_inc"]),
+            series=(
+                plot_kwargs["topo_cmap_min"],
+                plot_kwargs["topo_cmap_max"],
+                plot_kwargs["topo_cmap_inc"],
+            ),
             continuous=False,
             cmap=plot_kwargs["topo_cmap"],
-            reverse=plot_kwargs["topo_cmap_reverse"]
+            reverse=plot_kwargs["topo_cmap_reverse"],
         )
         fig.grdimage(
             grid=map_data.topo_grid,
@@ -210,6 +214,8 @@ def plot_grid(
     reverse_cmap: bool = False,
     log_cmap: bool = False,
     transparency: float = 0.0,
+    plot_contours: bool = True,
+    continuous_cmap: bool = False,
 ):
     """
     Plots the given grid as a colourmap & contours
@@ -224,6 +230,7 @@ def plot_grid(
         along with a data value
     cmap: string
         The "master" colourmap to use (see gmt documentation)
+        https://docs.generic-mapping-tools.org/6.2/cookbook/cpts.html
     cmap_limits: triplet of floats
         The min, max & step value for colour map
         Number of colours is therefore given by
@@ -236,6 +243,16 @@ def plot_grid(
     log_cmap: bool, optional
         Create a log10 based colourmap
         Expects the cmap_limits to be log10(z)
+    transparency: float, optional
+        Controls the level of transparency (0-100)
+    plot_contours: bool, optional
+        Enable/Disable contours
+        A contour line is plotted for every
+        2nd colour step
+    continuous_cmap: bool, optional
+        If specified, a continuous colormap is used
+        See https://www.pygmt.org/latest/api/generated/pygmt.makecpt.html
+        for details
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_dir = Path(tmp_dir)
@@ -258,6 +275,7 @@ def plot_grid(
             output=cpt_ffp,
             reverse=reverse_cmap,
             log=log_cmap,
+            continuous=continuous_cmap,
         )
         pygmt.makecpt(
             cmap=cmap,
@@ -277,13 +295,14 @@ def plot_grid(
         )
 
         # Plot the contours
-        fig.grdcontour(
-            annotation="-",
-            interval=cpt_ffp_ct,
-            grid=grid,
-            limit=[cmap_limits[0], cmap_limits[1]],
-            pen="0.1p",
-        )
+        if plot_contours:
+            fig.grdcontour(
+                annotation="-",
+                interval=cpt_ffp_ct,
+                grid=grid,
+                limit=[cmap_limits[0], cmap_limits[1]],
+                pen="0.1p",
+            )
 
         # Add a colorbar, with an annotated tick every second colour step,
         # and un-annotated tick with every other colour step
@@ -303,7 +322,7 @@ def create_grid(
     grid_spacing: str = "200e/200e",
     region: Union[str, Tuple[float, float, float, float]] = "NZ",
     interp_method: str = "linear",
-set_water_to_nan: bool = True,
+    set_water_to_nan: bool = True,
 ):
     """
     Creates a regular grid from the available unstructured data
@@ -315,7 +334,7 @@ set_water_to_nan: bool = True,
 
         Expected to have columns, [lon, lat] and data_key
     grid_spacing: string
-        Grid spacing to use, uses gmt gridding
+        Grid spacing to use, uses gmt griding
         functionality, see "spacing" in
         (https://www.pygmt.org/latest/api/generated/pygmt.grdlandmask.html)
 
